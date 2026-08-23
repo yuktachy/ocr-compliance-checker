@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Settings &amp; Rule Repository — LegalMetriX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Persistent Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Navigation Bar -->
+      <div id="topbar-container" data-title="System Settings" data-breadcrumb="Settings &amp; Rules"></div>
+
+      <!-- Page Content -->
+      <main class="content-body">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--slate-900); letter-spacing: -0.4px;">System Settings &amp; Rule Repository</h1>
+            <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">
+              Manage enforcement officer profiles, optical threshold rules, and statutory Legal Metrology configuration.
+            </p>
+          </div>
+          <div>
+            <button type="button" class="btn btn-danger btn-sm" onclick="SettingsController.resetAllData()">
+              <i class="fa-solid fa-rotate"></i>
+              <span>Reset Demo Database</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. Active Role Switcher Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-users-gear" style="color: #2563eb;"></i> Role-Based Access Control Simulation</h3>
+              <div class="card-subtitle">Switch between enforcement tiers to test operational permissions</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div class="role-select-card" id="settings-role-inspector" onclick="SettingsController.switchRole('inspector')">
+                <div class="role-icon-box"><i class="fa-solid fa-user-shield"></i></div>
+                <div class="role-details">
+                  <div class="role-name">Inspector</div>
+                  <div class="role-desc">Conduct inspections &amp; generate reports</div>
+                </div>
+              </div>
+
+              <div class="role-select-card" id="settings-role-supervisor" onclick="SettingsController.switchRole('supervisor')">
+                <div class="role-icon-box"><i class="fa-solid fa-user-tie"></i></div>
+                <div class="role-details">
+                  <div class="role-name">Supervisor</div>
+                  <div class="role-desc">Review notices &amp; regional analytics</div>
+                </div>
+              </div>
+
+              <div class="role-select-card" id="settings-role-admin" onclick="SettingsController.switchRole('admin')">
+                <div class="role-icon-box"><i class="fa-solid fa-crown"></i></div>
+                <div class="role-details">
+                  <div class="role-name">Administrator</div>
+                  <div class="role-desc">System rule configurations &amp; master logs</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Legal Metrology Rule Repository Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-scale-balanced" style="color: var(--primary-navy-800);"></i> Legal Metrology Statutory Rule Repository</h3>
+              <div class="card-subtitle">Active legal baseline for automated compliance screening</div>
+            </div>
+            <div>
+              <span class="badge-status compliant"><span class="badge-dot"></span> Active &amp; In Force</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="background-color: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px; font-size: 13px;">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <div><strong>Statutory Reference:</strong> Legal Metrology (Packaged Commodities) Rules, 2011</div>
+                <div><strong>Enforcement Status:</strong> Active (2022/2024 Unit Sale Price Amendments Included)</div>
+                <div><strong>Effective Date:</strong> 01 January 2024</div>
+                <div><strong>Governing Authority:</strong> Ministry of Consumer Affairs, Government of India</div>
+              </div>
+            </div>
+
+            <h4 style="font-size: 13.5px; font-weight: 700; color: var(--slate-900); margin-bottom: 12px;">
+              Mandatory Declarations Screening Matrix (Rule 6)
+            </h4>
+
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Statutory Rule</th>
+                    <th>Required Declaration</th>
+                    <th>Enforcement Parameter</th>
+                    <th>Automated Check Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="table-code">Rule 6(1)(a)</span></td>
+                    <td>Manufacturer / Packer / Importer</td>
+                    <td>Complete registered business name, factory location, PIN code</td>
+                    <td><span class="badge-status compliant"><span class="badge-dot"></span> Enforced</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="table-code">Rule 6(1)(b)</span></td>
+                    <td>Country of Origin</td>
+                    <td>Mandatory declaration of origin on domestic &amp; imported goods</td>
+                    <td><span class="badge-status compliant"><span class="badge-dot"></span> Enforced</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="table-code">Rule 6(1)(d)</span></td>
+                    <td>Net Quantity / Standard Units</td>
+                    <td>Standard metric SI units (g, kg, ml, L, N)</td>
+                    <td><span class="badge-status compliant"><span class="badge-dot"></span> Enforced</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="table-code">Rule 6(1)(e)</span></td>
+                    <td>Maximum Retail Price (MRP)</td>
+                    <td>Inclusive of all taxes + Unit Sale Price (USP)</td>
+                    <td><span class="badge-status compliant"><span class="badge-dot"></span> Enforced</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="table-code">Rule 6(1)(f)</span></td>
+                    <td>Consumer Grievance Cell</td>
+                    <td>Contact name/designation, phone/toll-free &amp; email</td>
+                    <td><span class="badge-status compliant"><span class="badge-dot"></span> Enforced</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="legal-notice">
+              <strong>Notice:</strong> Prototype representation only. This application does not claim to contain every single sub-rule and schedule provision under the Legal Metrology Act.
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. AI & OCR Detection Thresholds -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-sliders" style="color: #6366f1;"></i> AI &amp; Optical Screening Thresholds</h3>
+              <div class="card-subtitle">Calibrate confidence cutoffs for automated verification flagging</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <form id="settings-form" onsubmit="SettingsController.saveSettings(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="setting-ocr-conf">
+                    OCR Minimum Confidence Threshold: <strong id="conf-val-label">75%</strong>
+                  </label>
+                  <input type="range" id="setting-ocr-conf" class="form-control" min="50" max="95" value="75" oninput="document.getElementById('conf-val-label').textContent = this.value + '%'">
+                  <div class="form-text">Detections below this threshold are flagged as "Needs Verification".</div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="setting-font-px">
+                    Estimated PDP Font Height Minimum: <strong id="font-val-label">12 px</strong>
+                  </label>
+                  <input type="range" id="setting-font-px" class="form-control" min="8" max="24" value="12" oninput="document.getElementById('font-val-label').textContent = this.value + ' px'">
+                  <div class="form-text">Estimated pixel threshold for visual readability warnings.</div>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="setting-unit-price" checked style="width: 18px; height: 18px;">
+                  <span style="font-size: 13px; font-weight: 600; color: var(--slate-800);">Strict Unit Sale Price (USP) Requirement Check</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="setting-auto-report" checked style="width: 18px; height: 18px;">
+                  <span style="font-size: 13px; font-weight: 600; color: var(--slate-800);">Auto-generate preliminary screening report when potential violations are confirmed</span>
+                </label>
+              </div>
+
+              <div class="card-footer" style="padding-left: 0; padding-right: 0; background: none; margin-top: 20px;">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-floppy-disk"></i>
+                  <span>Save Configuration</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 4. Officer Profile -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-id-card" style="color: #10b981;"></i> Enforcement Officer Credentials</h3>
+              <div class="card-subtitle">Active user profile and jurisdictional division</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="prof-name" class="form-control" value="R. Sundaram" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Officer Badge / ID</label>
+                <input type="text" id="prof-badge" class="form-control table-code" value="LM-OFFICER-102" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Division / Zone</label>
+                <input type="text" id="prof-zone" class="form-control" value="Tamil Nadu - Zone 01" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>
