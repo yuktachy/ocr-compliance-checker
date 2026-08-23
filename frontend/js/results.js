@@ -5,15 +5,12 @@
 const ResultsController = (function() {
   let currentInspection = null;
 
-  function init() {
+  async function init() {
     const urlParams = new URLSearchParams(window.location.search);
     const inspectionId = urlParams.get('id') || 'LM-1024';
 
-    currentInspection = API.getInspection(inspectionId);
-    if (!currentInspection) {
-      const all = API.getInspections();
-      currentInspection = all.length > 0 ? all[0] : null;
-    }
+    try { currentInspection = await API.getInspection(inspectionId); }
+    catch (_) { const all = await API.getInspections(); currentInspection = all.length > 0 ? all[0] : null; }
 
     if (!currentInspection) {
       App.toast("Inspection record not found.", "danger");
@@ -306,14 +303,14 @@ const ResultsController = (function() {
     }).join('');
   }
 
-  function confirmIssue(issueId) {
+  async function confirmIssue(issueId) {
     const violations = currentInspection.violations || [];
     const v = violations.find(item => item.id === issueId);
     if (v) {
       v.status = "confirmed";
       currentInspection.status = "potential_violation";
       currentInspection.officialDecision = "Non-Compliance Confirmed by Officer";
-      API.updateInspection(currentInspection.id, currentInspection);
+      await API.updateInspection(currentInspection.id, currentInspection);
       renderHeader();
       renderAssessmentBanner();
       renderEvidenceAndIssues();
@@ -321,7 +318,7 @@ const ResultsController = (function() {
     }
   }
 
-  function dismissIssue(issueId) {
+  async function dismissIssue(issueId) {
     const violations = currentInspection.violations || [];
     const v = violations.find(item => item.id === issueId);
     if (v) {
@@ -332,7 +329,7 @@ const ResultsController = (function() {
         currentInspection.status = "compliant";
         currentInspection.officialDecision = "Manually Verified & Approved";
       }
-      API.updateInspection(currentInspection.id, currentInspection);
+      await API.updateInspection(currentInspection.id, currentInspection);
       renderHeader();
       renderAssessmentBanner();
       renderEvidenceAndIssues();
@@ -386,24 +383,24 @@ const ResultsController = (function() {
     }
   }
 
-  function updateRemarks() {
+  async function updateRemarks() {
     const textarea = document.getElementById("inspector-remarks-input");
     if (textarea) {
       currentInspection.remarks = textarea.value;
-      API.updateInspection(currentInspection.id, currentInspection);
+      await API.updateInspection(currentInspection.id, currentInspection);
       App.toast("Inspector verification remarks saved.", "success");
     }
   }
 
-  function saveInspection() {
-    updateRemarks();
-    API.updateInspection(currentInspection.id, currentInspection);
-    App.toast(`Inspection ${currentInspection.id} successfully saved to local database.`, "success");
+  async function saveInspection() {
+    await updateRemarks();
+    await API.updateInspection(currentInspection.id, currentInspection);
+    App.toast(`Inspection ${currentInspection.id} saved to the backend.`, "success");
   }
 
-  function generateOfficialReport() {
-    saveInspection();
-    const report = API.generateReport(currentInspection.id);
+  async function generateOfficialReport() {
+    await saveInspection();
+    const report = await API.generateReport(currentInspection.id);
     App.toast("Official Legal Metrology compliance report generated.", "success");
     setTimeout(() => {
       window.location.href = `reports.html?id=${report.id}`;
@@ -421,6 +418,6 @@ const ResultsController = (function() {
   };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
-  ResultsController.init();
+document.addEventListener("DOMContentLoaded", async () => {
+  try { await ResultsController.init(); } catch (error) { App.toast(`Could not load inspection: ${error.message}`, "danger"); }
 });

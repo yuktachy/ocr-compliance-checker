@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-import os
+from fastapi.templating import Jinja2Templates
+from pathlib import Path
 
 from .router.dashboard import router as dashboard_router
 from .router.inspections import router as inspections_router
@@ -27,9 +29,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount Upload static folder
-UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "upload")
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+# Frontend is served by this same FastAPI application. This avoids opening the
+# HTML with file://, which prevents reliable fetch requests in browsers.
+BACKEND_DIR = Path(__file__).resolve().parents[1]
+PROJECT_DIR = BACKEND_DIR.parent
+FRONTEND_DIR = PROJECT_DIR / "frontend"
+UPLOAD_DIR = BACKEND_DIR / "upload"
+UPLOAD_DIR.mkdir(exist_ok=True)
+templates = Jinja2Templates(directory=str(FRONTEND_DIR))
+
+# Existing HTML uses css/... and js/... paths. Keep those URLs stable while
+# serving the files through FastAPI.
+app.mount("/css", StaticFiles(directory=FRONTEND_DIR / "css"), name="css")
+app.mount("/js", StaticFiles(directory=FRONTEND_DIR / "js"), name="js")
 app.mount("/upload", StaticFiles(directory=UPLOAD_DIR), name="upload")
 
 # Include Routers
@@ -42,11 +54,15 @@ app.include_router(notifications_router, prefix="/app")
 app.include_router(settings_router, prefix="/app")
 app.include_router(auth_router, prefix="/app")
 
-@app.get("/")
-def root():
-    return {
-        "status": "online",
-        "service": "Legal Metrology OCR Compliance API",
-        "version": "1.0.0",
-        "docs_url": "/docs"
-    }
+PAGES = {"index", "dashboard", "inspection", "history", "results", "products", "reports", "analytics", "settings"}
+
+@app.get("/", response_class=HTMLResponse)
+def root(request: Request):
+    return templates.TemplateResponse(request=request, name="index.html")
+
+@app.get("/{page}.html", response_class=HTMLResponse)
+def frontend_page(request: Request, page: str):
+    if page not in PAGES:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Page not found")
+    return templates.TemplateResponse(request=request, name=f"{page}.html")

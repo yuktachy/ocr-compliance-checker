@@ -12,3 +12,10 @@ def get_reports(db: SupabaseRepository = Depends(get_db)):
 def generate_report(payload: ReportCreate, db: SupabaseRepository = Depends(get_db)):
     if not db.get("inspections", payload.inspection_id): raise HTTPException(404, f"Inspection {payload.inspection_id} not found")
     return db.insert("reports", {"inspection_id": payload.inspection_id, "format": "json", "file_path": None})
+
+@router.delete("/{id}")
+def delete_report(id: str, db: SupabaseRepository = Depends(get_db)):
+    if not db.get("reports", id):
+        raise HTTPException(404, f"Report {id} not found")
+    db.delete("reports", id)
+    return {"success": True}

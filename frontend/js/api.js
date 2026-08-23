@@ -1830,3 +1830,65 @@ const API = (function() {
 
 // Export globally for script tags
 window.API = API;
+
+// ==========================================
+// FASTAPI INTEGRATION
+// ==========================================
+// Set window.LEGALMETRIX_API_URL before loading api.js to override this (for
+// example in deployment). The default is the local FastAPI app.
+(function connectToBackend(api) {
+  const sameOriginApi = window.location.origin && window.location.origin !== 'null'
+    ? `${window.location.origin}/app` : 'http://127.0.0.1:8000/app';
+  const baseUrl = (window.LEGALMETRIX_API_URL || localStorage.getItem('legalmetrix_api_url') || sameOriginApi).replace(/\/$/, '');
+  const request = async (path, options = {}) => {
+    const response = await fetch(`${baseUrl}${path}`, {
+      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }, ...options
+    });
+    if (!response.ok) throw new Error((await response.json().catch(() => ({}))).detail || `Request failed (${response.status})`);
+    return response.status === 204 ? null : response.json();
+  };
+  const status = value => ({ violation: 'potential_violation', 'needs-verification': 'needs_verification' }[value] || value || 'needs_verification');
+  const apiStatus = value => ({ potential_violation: 'violation', needs_verification: 'needs-verification' }[value] || value);
+  const inspection = row => ({
+    ...row, id: row.id, date: (row.created_at || '').slice(0, 10), reportedAt: row.created_at,
+    product: { name: row.product_name, brand: row.brand, category: row.category, manufacturer: row.manufacturer },
+    images: { front: row.image_url, back: row.image_url }, status: status(row.status),
+    declarations: row.declarations || {}, violations: row.violations || [], readability: row.readability || {}
+  });
+  const inspectionPayload = value => ({
+    product_name: value.product?.name || value.productName, brand: value.product?.brand || value.brand,
+    category: value.product?.category || value.category, manufacturer: value.product?.manufacturer || value.manufacturer,
+    retailer: value.retailer, location: value.location, image_url: value.images?.back || value.image_url,
+    declarations: value.declarations || {}, violations: value.violations || [], readability: value.readability || {},
+    status: apiStatus(value.status), overall_confidence: value.overall_confidence || value.overallConfidence || 0.88
+  });
+  const product = row => ({ ...row, inspectionsCount: row.total_inspections || 0, compliantCount: row.compliant_count || 0,
+    violationCount: row.violation_count || 0, latestStatus: status(row.latest_status), imageUrl: row.image_url,
+    lastInspectionDate: (row.last_inspected || '').slice(0, 10) });
+  const report = row => ({ ...row, inspectionId: row.inspection_id, productName: row.product_name,
+    generatedDate: (row.generated_at || '').slice(0, 10), generatedBy: 'Legal Metrology Inspector' });
+
+  api.getDashboardStats = async () => {
+    const stats = await request('/dashboard/stats');
+    return { ...stats, recentInspections: (stats.recentInspections || []).map(inspection) };
+  };
+  api.getInspections = async (filters = {}) => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => { if (value && value !== 'all') params.set(key, value); });
+    const rows = await request(`/inspections${params.size ? `?${params}` : ''}`);
+    return rows.map(inspection);
+  };
+  api.getInspection = async id => inspection(await request(`/inspections/${encodeURIComponent(id)}`));
+  api.createInspection = async value => inspection(await request('/inspections', { method: 'POST', body: JSON.stringify(inspectionPayload(value)) }));
+  api.updateInspection = async (id, value) => inspection(await request(`/inspections/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(inspectionPayload(value)) }));
+  api.deleteInspection = async id => request(`/inspections/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  api.getProducts = async filters => {
+    const params = new URLSearchParams(); Object.entries(filters || {}).forEach(([k, v]) => { if (v && v !== 'all') params.set(k, v); });
+    return (await request(`/products${params.size ? `?${params}` : ''}`)).map(product);
+  };
+  api.getProduct = async id => (await api.getProducts()).find(item => item.id === id) || null;
+  api.getReports = async () => (await request('/reports')).map(report);
+  api.generateReport = async inspectionId => report(await request('/reports', { method: 'POST', body: JSON.stringify({ inspection_id: inspectionId }) }));
+  api.deleteReport = async id => request(`/reports/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  api.apiBaseUrl = baseUrl;
+})(window.API);

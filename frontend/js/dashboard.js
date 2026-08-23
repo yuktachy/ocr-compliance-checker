@@ -2,12 +2,14 @@
  * LegalMetriX - Dashboard Controller
  */
 
-document.addEventListener("DOMContentLoaded", () => {
-  initDashboard();
+document.addEventListener("DOMContentLoaded", async () => {
+  await initDashboard();
 });
 
-function initDashboard() {
-  const stats = API.getDashboardStats();
+async function initDashboard() {
+  let stats;
+  try { stats = await API.getDashboardStats(); }
+  catch (error) { console.error(error); App.toast(`Could not load dashboard: ${error.message}`, "danger"); return; }
   renderDashboardStats(stats);
   renderComplianceDoughnut(stats);
   renderViolationsBarChart(stats);
@@ -25,13 +27,13 @@ function renderDashboardStats(stats) {
   const verificationValEl = document.getElementById("stat-verification-val");
   const verificationPctEl = document.getElementById("stat-verification-pct");
 
-  if (totalValEl) totalValEl.textContent = "12,482";
-  if (compliantValEl) compliantValEl.textContent = "9,821";
-  if (compliantPctEl) compliantPctEl.textContent = "78.6%";
-  if (violationsValEl) violationsValEl.textContent = "1,642";
-  if (violationsPctEl) violationsPctEl.textContent = "13.2%";
-  if (verificationValEl) verificationValEl.textContent = "958";
-  if (verificationPctEl) verificationPctEl.textContent = "7.7%";
+  if (totalValEl) totalValEl.textContent = stats.totalInspections.toLocaleString();
+  if (compliantValEl) compliantValEl.textContent = stats.compliant.count.toLocaleString();
+  if (compliantPctEl) compliantPctEl.textContent = `${stats.compliant.percentage}%`;
+  if (violationsValEl) violationsValEl.textContent = stats.potentialViolations.count.toLocaleString();
+  if (violationsPctEl) violationsPctEl.textContent = `${stats.potentialViolations.percentage}%`;
+  if (verificationValEl) verificationValEl.textContent = stats.needsVerification.count.toLocaleString();
+  if (verificationPctEl) verificationPctEl.textContent = `${stats.needsVerification.percentage}%`;
 }
 
 function renderComplianceDoughnut(stats) {
@@ -43,7 +45,7 @@ function renderComplianceDoughnut(stats) {
     data: {
       labels: ["Likely Compliant", "Potential Violations", "Needs Verification"],
       datasets: [{
-        data: [9821, 1642, 958],
+        data: [stats.compliant.count, stats.potentialViolations.count, stats.needsVerification.count],
         backgroundColor: ["#10b981", "#ef4444", "#f59e0b"],
         borderWidth: 2,
         borderColor: "#ffffff"
@@ -65,7 +67,7 @@ function renderComplianceDoughnut(stats) {
           callbacks: {
             label: function(context) {
               const val = context.raw;
-              const total = 12482;
+              const total = stats.totalInspections || 1;
               const pct = ((val / total) * 100).toFixed(1);
               return ` ${context.label}: ${val.toLocaleString()} (${pct}%)`;
             }
@@ -87,7 +89,7 @@ function renderViolationsBarChart(stats) {
       labels: ["MRP / Unit Price", "Missing Declarations", "Font / Readability", "Net Quantity", "Other"],
       datasets: [{
         label: "Violations Detected",
-        data: [421, 387, 294, 210, 330],
+        data: [stats.violationTypeCounts.MRP || 0, stats.violationTypeCounts["Missing Declarations"] || 0, stats.violationTypeCounts["Font / Readability"] || 0, stats.violationTypeCounts["Net Quantity"] || 0, stats.violationTypeCounts["Other"] || 0],
         backgroundColor: "#2563eb",
         borderRadius: 4
       }]
@@ -191,13 +193,13 @@ function renderRecentInspectionsTable(inspections) {
       <tr>
         <td><span class="table-code">${item.id}</span></td>
         <td>
-          <div style="font-weight: 600; color: var(--slate-900);">${item.product?.name || 'Packaged Commodity'}</div>
-          <div style="font-size: 11.5px; color: var(--slate-500);">${item.product?.brand || ''}</div>
+          <div style="font-weight: 600; color: var(--slate-900);">${item.product_name || item.product?.name || 'Packaged Commodity'}</div>
+          <div style="font-size: 11.5px; color: var(--slate-500);">${item.brand || item.product?.brand || ''}</div>
         </td>
-        <td><span style="font-size: 12px; color: var(--slate-600);">${item.product?.category || 'General'}</span></td>
+        <td><span style="font-size: 12px; color: var(--slate-600);">${item.category || item.product?.category || 'General'}</span></td>
         <td><i class="fa-solid fa-location-dot" style="font-size: 11px; color: var(--slate-400); margin-right: 4px;"></i>${item.location || 'Chennai'}</td>
         <td><span style="font-size: 12px;">${item.inspector || 'Inspector'}</span></td>
-        <td><span style="font-size: 12px; color: var(--slate-600);">${item.date || '2026-08-23'}</span></td>
+        <td><span style="font-size: 12px; color: var(--slate-600);">${(item.created_at || item.date || '').slice(0, 10)}</span></td>
         <td>
           <span class="badge-status ${badgeClass}">
             <span class="badge-dot"></span>

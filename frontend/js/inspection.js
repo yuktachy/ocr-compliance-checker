@@ -21,9 +21,9 @@ const InspectionController = (function() {
     }
   };
 
-  function init() {
+  async function init() {
     // Generate next Inspection ID
-    const inspections = API.getInspections();
+    const inspections = await API.getInspections();
     const maxNum = inspections.reduce((max, i) => {
       const num = parseInt(i.id.replace('LM-', ''), 10);
       return !isNaN(num) && num > max ? num : max;
@@ -235,16 +235,18 @@ const InspectionController = (function() {
         }, 500);
       } else {
         // Complete Analysis
-        setTimeout(() => {
+        setTimeout(async () => {
           const analyzedInspection = API.analyzePackage(inspectionState, inspectionState.images);
-          API.createInspection(analyzedInspection);
+          let savedInspection;
+          try { savedInspection = await API.createInspection(analyzedInspection); }
+          catch (error) { modal.classList.remove("active"); App.toast(`Could not save inspection: ${error.message}`, "danger"); return; }
 
           modal.classList.remove("active");
           App.toast("Package screening complete. Displaying screening results...", "success");
 
           // Navigate to Results page
           setTimeout(() => {
-            window.location.href = `results.html?id=${analyzedInspection.id}`;
+            window.location.href = `results.html?id=${savedInspection.id}`;
           }, 400);
         }, 600);
       }
@@ -270,6 +272,6 @@ const InspectionController = (function() {
   };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
-  InspectionController.init();
+document.addEventListener("DOMContentLoaded", async () => {
+  try { await InspectionController.init(); } catch (error) { App.toast(`Could not initialise inspection: ${error.message}`, "danger"); }
 });

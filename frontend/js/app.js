@@ -108,7 +108,8 @@ const App = (function() {
     const pageTitle = topbarEl.getAttribute("data-title") || "LegalMetriX";
     const breadcrumbs = topbarEl.getAttribute("data-breadcrumb") || "Enforcement Portal";
     const currentUser = API.getCurrentUser();
-    const notifications = API.getNotifications();
+    // query.sql currently has no notifications table; keep this UI non-blocking.
+    const notifications = [];
     const unreadCount = notifications.filter(n => n.unread).length;
 
     topbarEl.innerHTML = `
@@ -189,7 +190,7 @@ const App = (function() {
     const resultsContainer = document.getElementById("global-search-results");
     if (!input || !resultsContainer) return;
 
-    input.addEventListener("input", (e) => {
+    input.addEventListener("input", async (e) => {
       const query = e.target.value.trim();
       if (query.length < 2) {
         resultsContainer.classList.remove("active");
@@ -197,7 +198,15 @@ const App = (function() {
         return;
       }
 
-      const matches = API.globalSearch(query);
+      let matches = [];
+      try {
+        const [inspections, products, reports] = await Promise.all([API.getInspections({ search: query }), API.getProducts({ search: query }), API.getReports()]);
+        matches = [
+          ...inspections.map(i => ({ type: 'inspection', title: `${i.id} — ${i.product?.name || 'Inspection'}`, subtitle: `${i.location || ''} • ${i.date || ''}`, url: `results.html?id=${i.id}` })),
+          ...products.map(p => ({ type: 'product', title: `${p.name} (${p.brand})`, subtitle: p.category || '', url: `products.html?id=${p.id}` })),
+          ...reports.filter(r => `${r.id} ${r.productName}`.toLowerCase().includes(query.toLowerCase())).map(r => ({ type: 'report', title: `${r.id} — ${r.productName}`, subtitle: r.generatedDate || '', url: `reports.html?id=${r.id}` }))
+        ].slice(0, 8);
+      } catch (error) { console.error(error); }
       if (matches.length === 0) {
         resultsContainer.innerHTML = `<div style="padding: 12px 16px; font-size: 12px; color: var(--slate-500);">No matching records found for "${query}".</div>`;
       } else {
@@ -242,9 +251,7 @@ const App = (function() {
   }
 
   function markAllNotificationsRead() {
-    API.markNotificationsAsRead();
-    renderTopbar();
-    App.toast("All notifications marked as read", "info");
+    App.toast("Notifications are not enabled by the current backend schema.", "info");
   }
 
   // Mobile Menu

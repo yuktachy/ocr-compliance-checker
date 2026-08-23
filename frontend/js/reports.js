@@ -6,8 +6,8 @@ const ReportsController = (function() {
   let reportsList = [];
   let currentInspection = null;
 
-  function init() {
-    loadReports();
+  async function init() {
+    await loadReports();
 
     // Check url params for ?id=
     const urlParams = new URLSearchParams(window.location.search);
@@ -17,8 +17,8 @@ const ReportsController = (function() {
     }
   }
 
-  function loadReports() {
-    reportsList = API.getReports();
+  async function loadReports() {
+    reportsList = await API.getReports();
     renderTable();
   }
 
@@ -72,14 +72,15 @@ const ReportsController = (function() {
     }).join('');
   }
 
-  function openReport(reportId) {
+  async function openReport(reportId) {
     let report = reportsList.find(r => r.id === reportId || r.inspectionId === reportId);
     if (!report && reportsList.length > 0) {
       report = reportsList[0];
     }
     if (!report) return;
 
-    currentInspection = API.getInspection(report.inspectionId) || API.getInspections()[0];
+    try { currentInspection = await API.getInspection(report.inspectionId); }
+    catch (_) { currentInspection = (await API.getInspections())[0]; }
     if (!currentInspection) return;
 
     // Populate Report Document Fields
@@ -174,17 +175,17 @@ const ReportsController = (function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function printReport(reportId) {
-    openReport(reportId);
+  async function printReport(reportId) {
+    await openReport(reportId);
     setTimeout(() => {
       window.print();
     }, 400);
   }
 
-  function deleteReport(reportId) {
+  async function deleteReport(reportId) {
     if (confirm(`Are you sure you want to delete report ${reportId}?`)) {
-      API.deleteReport(reportId);
-      loadReports();
+      await API.deleteReport(reportId);
+      await loadReports();
       App.toast(`Report ${reportId} deleted.`, "info");
     }
   }
@@ -210,6 +211,6 @@ const ReportsController = (function() {
   };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
-  ReportsController.init();
+document.addEventListener("DOMContentLoaded", async () => {
+  try { await ReportsController.init(); } catch (error) { App.toast(`Could not load reports: ${error.message}`, "danger"); }
 });

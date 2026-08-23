@@ -9,22 +9,22 @@ const HistoryController = (function() {
   const pageSize = 10;
   let currentSort = { column: 'date', ascending: false };
 
-  function init() {
-    loadData();
+  async function init() {
+    await loadData();
   }
 
-  function loadData() {
-    allInspections = API.getInspections();
-    applyFilters();
+  async function loadData() {
+    allInspections = await API.getInspections();
+    await applyFilters();
   }
 
-  function applyFilters() {
+  async function applyFilters() {
     const search = document.getElementById("filter-search")?.value || "";
     const location = document.getElementById("filter-location")?.value || "all";
     const category = document.getElementById("filter-category")?.value || "all";
     const status = document.getElementById("filter-status")?.value || "all";
 
-    filteredInspections = API.getInspections({
+    filteredInspections = await API.getInspections({
       search: search,
       location: location,
       category: category,
@@ -38,13 +38,13 @@ const HistoryController = (function() {
     renderTable();
   }
 
-  function resetFilters() {
+  async function resetFilters() {
     if (document.getElementById("filter-search")) document.getElementById("filter-search").value = "";
     if (document.getElementById("filter-location")) document.getElementById("filter-location").value = "all";
     if (document.getElementById("filter-category")) document.getElementById("filter-category").value = "all";
     if (document.getElementById("filter-status")) document.getElementById("filter-status").value = "all";
 
-    applyFilters();
+    await applyFilters();
     App.toast("Filters reset.", "info");
   }
 
@@ -189,15 +189,15 @@ const HistoryController = (function() {
     window.scrollTo({ top: 200, behavior: 'smooth' });
   }
 
-  function goToReport(inspectionId) {
-    const report = API.generateReport(inspectionId);
-    window.location.href = `reports.html?id=${report.id}`;
+  async function goToReport(inspectionId) {
+    try { const report = await API.generateReport(inspectionId); window.location.href = `reports.html?id=${report.id}`; }
+    catch (error) { App.toast(error.message, "danger"); }
   }
 
-  function deleteRecord(id) {
+  async function deleteRecord(id) {
     if (confirm(`Are you sure you want to delete inspection record ${id}? This action cannot be undone.`)) {
-      API.deleteInspection(id);
-      loadData();
+      await API.deleteInspection(id);
+      await loadData();
       App.toast(`Inspection ${id} deleted.`, "info");
     }
   }
@@ -241,6 +241,6 @@ const HistoryController = (function() {
   };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
-  HistoryController.init();
+document.addEventListener("DOMContentLoaded", async () => {
+  try { await HistoryController.init(); } catch (error) { App.toast(`Could not load inspections: ${error.message}`, "danger"); }
 });

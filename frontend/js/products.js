@@ -5,8 +5,8 @@
 const ProductsController = (function() {
   let productsList = [];
 
-  function init() {
-    loadProducts();
+  async function init() {
+    await loadProducts();
 
     // Check if url contains ?id=
     const urlParams = new URLSearchParams(window.location.search);
@@ -16,16 +16,16 @@ const ProductsController = (function() {
     }
   }
 
-  function loadProducts() {
-    applyFilters();
+  async function loadProducts() {
+    await applyFilters();
   }
 
-  function applyFilters() {
+  async function applyFilters() {
     const search = document.getElementById("prod-search-input")?.value || "";
     const category = document.getElementById("prod-cat-filter")?.value || "all";
     const status = document.getElementById("prod-status-filter")?.value || "all";
 
-    productsList = API.getProducts({
+    productsList = await API.getProducts({
       search: search,
       category: category,
       status: status
@@ -34,11 +34,11 @@ const ProductsController = (function() {
     renderTable();
   }
 
-  function resetFilters() {
+  async function resetFilters() {
     if (document.getElementById("prod-search-input")) document.getElementById("prod-search-input").value = "";
     if (document.getElementById("prod-cat-filter")) document.getElementById("prod-cat-filter").value = "all";
     if (document.getElementById("prod-status-filter")) document.getElementById("prod-status-filter").value = "all";
-    applyFilters();
+    await applyFilters();
   }
 
   function renderTable() {
@@ -73,7 +73,7 @@ const ProductsController = (function() {
           <td><span style="font-size: 12px; color: var(--slate-600);">${p.category}</span></td>
           <td><span style="font-size: 12px;">${p.manufacturer}</span></td>
           <td>
-            <div style="font-weight: 700;">${p.inspectionsCount || 1} Audits</div>
+            <div style="font-weight: 700;">${p.inspectionsCount || 0} Audits</div>
             <div style="font-size: 11px; color: var(--slate-500);">
               <span style="color: #059669;">${p.compliantCount || 0} Pass</span> • 
               <span style="color: #dc2626;">${p.violationCount || 0} Flags</span>
@@ -100,8 +100,8 @@ const ProductsController = (function() {
     }).join('');
   }
 
-  function openProductModal(prodId) {
-    const prod = API.getProduct(prodId);
+  async function openProductModal(prodId) {
+    const prod = await API.getProduct(prodId);
     if (!prod) return;
 
     const modal = document.getElementById("product-detail-modal");
@@ -164,6 +164,6 @@ const ProductsController = (function() {
   };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
-  ProductsController.init();
+document.addEventListener("DOMContentLoaded", async () => {
+  try { await ProductsController.init(); } catch (error) { App.toast(`Could not load products: ${error.message}`, "danger"); }
 });
