@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Compliance Inspection — LegalMetriX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Persistent Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Navigation Bar -->
+      <div id="topbar-container" data-title="New Compliance Inspection" data-breadcrumb="New Inspection"></div>
+
+      <!-- Page Content -->
+      <main class="content-body">
+        <!-- Page Header -->
+        <div style="margin-bottom: 24px;">
+          <h1 style="font-size: 22px; font-weight: 800; color: var(--slate-900); letter-spacing: -0.4px;">New Compliance Inspection</h1>
+          <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">
+            Scan or upload packaged commodity images for automated preliminary screening under Legal Metrology Rules, 2011.
+          </p>
+        </div>
+
+        <!-- Multi-Step Wizard Navigation -->
+        <div class="wizard-steps">
+          <div class="wizard-step-item active" id="step-nav-1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Inspection Details</div>
+          </div>
+          <div class="wizard-step-item" id="step-nav-2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Upload Package Images</div>
+          </div>
+          <div class="wizard-step-item" id="step-nav-3">
+            <div class="step-circle">3</div>
+            <div class="step-label">AI / OCR Analysis</div>
+          </div>
+        </div>
+
+        <!-- STEP 1: Inspection & Product Details -->
+        <div id="step-section-1" class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-clipboard-check" style="color: #2563eb;"></i> Step 1: Inspection &amp; Commodity Information</h3>
+              <div class="card-subtitle">Enter retail establishment and package metadata</div>
+            </div>
+            <div>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="InspectionController.prefillSampleData()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Fill Sample Demo Details</span>
+              </button>
+            </div>
+          </div>
+
+          <form id="inspection-details-form" onsubmit="InspectionController.goToStep2(event)">
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="insp-id">Inspection ID</label>
+                  <input type="text" id="insp-id" class="form-control table-code" readonly value="LM-1025">
+                  <div class="form-text">System-generated unique inspection identifier</div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="insp-date">Inspection Date <span class="required">*</span></label>
+                  <input type="date" id="insp-date" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="insp-inspector">Inspector Officer</label>
+                  <input type="text" id="insp-inspector" class="form-control" readonly value="Inspector 102 (R. Sundaram)">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="insp-location">Location / City <span class="required">*</span></label>
+                  <input type="text" id="insp-location" class="form-control" placeholder="e.g. Chennai, T. Nagar" required value="Chennai">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="insp-retailer">Retailer / Establishment <span class="required">*</span></label>
+                  <input type="text" id="insp-retailer" class="form-control" placeholder="e.g. Supermarket / Warehouse" required value="ABC Supermarket, T. Nagar">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="insp-category">Product Category <span class="required">*</span></label>
+                  <select id="insp-category" class="form-control" required>
+                    <option value="Packaged Food" selected>Packaged Food</option>
+                    <option value="Household Goods">Household Goods</option>
+                    <option value="Cosmetics">Cosmetics</option>
+                    <option value="Personal Care">Personal Care</option>
+                    <option value="Agricultural Products">Agricultural Products</option>
+                    <option value="Electronics & Other">Electronics &amp; Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <hr style="border: 0; border-top: 1px solid var(--slate-200); margin: 16px 0 24px;">
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="insp-prod-name">Product Name <span class="required">*</span></label>
+                  <input type="text" id="insp-prod-name" class="form-control" placeholder="e.g. Whole Wheat Biscuits" required value="ABC Crunch Whole Wheat Biscuits">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="insp-brand">Brand <span class="required">*</span></label>
+                  <input type="text" id="insp-brand" class="form-control" placeholder="e.g. ABC Foods" required value="ABC">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="insp-manufacturer">Declared Manufacturer / Packer <span class="required">*</span></label>
+                  <input type="text" id="insp-manufacturer" class="form-control" placeholder="e.g. ABC Foods Pvt Ltd" required value="ABC Foods Private Limited">
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <button type="button" class="btn btn-secondary" onclick="InspectionController.saveDraft()">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Save Draft</span>
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <span>Continue to Upload Images</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- STEP 2: Image Upload & Scanning -->
+        <div id="step-section-2" class="card" style="display: none;">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-images" style="color: #2563eb;"></i> Step 2: Upload Package Images</h3>
+              <div class="card-subtitle">Upload clear high-resolution images of the front, back and side panels for OCR text extraction</div>
+            </div>
+            <div>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="InspectionController.loadSamplePackageImages()">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+                <span>Preload Demo Package (Biscuits)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="upload-grid">
+              <!-- FRONT PANEL CARD -->
+              <div class="upload-card" id="upload-card-front" ondragover="InspectionController.handleDragOver(event, this)" ondragleave="InspectionController.handleDragLeave(event, this)" ondrop="InspectionController.handleDrop(event, 'front')">
+                <input type="file" id="file-input-front" accept="image/*" style="display: none;" onchange="InspectionController.handleFileSelected(event, 'front')">
+                <input type="file" id="camera-input-front" accept="image/*" capture="environment" style="display: none;" onchange="InspectionController.handleFileSelected(event, 'front')">
+
+                <div id="empty-state-front">
+                  <div class="upload-icon"><i class="fa-solid fa-image"></i></div>
+                  <div class="upload-card-title">FRONT PANEL</div>
+                  <div class="upload-card-desc">Principal Display Panel with brand &amp; net weight</div>
+                  <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('file-input-front').click()">
+                      <i class="fa-solid fa-upload"></i> Upload Image
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('camera-input-front').click()">
+                      <i class="fa-solid fa-camera"></i> Camera
+                    </button>
+                  </div>
+                </div>
+
+                <div id="preview-state-front" style="display: none; width: 100%;">
+                  <img id="preview-img-front" class="upload-preview" src="" alt="Front Panel Preview">
+                  <div class="upload-meta" id="preview-meta-front">front_panel.png (340 KB)</div>
+                  <div style="display: flex; gap: 8px; justify-content: center;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('file-input-front').click()">Replace</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="InspectionController.removeImage('front')">Remove</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BACK PANEL CARD (Primary) -->
+              <div class="upload-card" id="upload-card-back" style="border-color: #2563eb; background-color: #f8faff;" ondragover="InspectionController.handleDragOver(event, this)" ondragleave="InspectionController.handleDragLeave(event, this)" ondrop="InspectionController.handleDrop(event, 'back')">
+                <input type="file" id="file-input-back" accept="image/*" style="display: none;" onchange="InspectionController.handleFileSelected(event, 'back')">
+                <input type="file" id="camera-input-back" accept="image/*" capture="environment" style="display: none;" onchange="InspectionController.handleFileSelected(event, 'back')">
+
+                <div id="empty-state-back">
+                  <div class="upload-icon" style="color: #2563eb;"><i class="fa-solid fa-file-invoice"></i></div>
+                  <div class="upload-card-title">BACK PANEL <span style="color: #2563eb; font-size: 11px;">(Mandatory Declarations)</span></div>
+                  <div class="upload-card-desc">MRP, Manufacturer address, Batch, Mfg Date, Consumer Care</div>
+                  <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('file-input-back').click()">
+                      <i class="fa-solid fa-upload"></i> Upload Image
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('camera-input-back').click()">
+                      <i class="fa-solid fa-camera"></i> Camera
+                    </button>
+                  </div>
+                </div>
+
+                <div id="preview-state-back" style="display: none; width: 100%;">
+                  <img id="preview-img-back" class="upload-preview" src="" alt="Back Panel Preview">
+                  <div class="upload-meta" id="preview-meta-back">back_declarations.png (480 KB)</div>
+                  <div style="display: flex; gap: 8px; justify-content: center;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('file-input-back').click()">Replace</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="InspectionController.removeImage('back')">Remove</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SIDE / ADDITIONAL PANEL CARD -->
+              <div class="upload-card" id="upload-card-side" ondragover="InspectionController.handleDragOver(event, this)" ondragleave="InspectionController.handleDragLeave(event, this)" ondrop="InspectionController.handleDrop(event, 'side')">
+                <input type="file" id="file-input-side" accept="image/*" style="display: none;" onchange="InspectionController.handleFileSelected(event, 'side')">
+                <input type="file" id="camera-input-side" accept="image/*" capture="environment" style="display: none;" onchange="InspectionController.handleFileSelected(event, 'side')">
+
+                <div id="empty-state-side">
+                  <div class="upload-icon"><i class="fa-solid fa-barcode"></i></div>
+                  <div class="upload-card-title">SIDE / ADDITIONAL PANEL</div>
+                  <div class="upload-card-desc">Nutrition table, Barcode, FSSAI / certification marks</div>
+                  <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('file-input-side').click()">
+                      <i class="fa-solid fa-upload"></i> Upload Image
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('camera-input-side').click()">
+                      <i class="fa-solid fa-camera"></i> Camera
+                    </button>
+                  </div>
+                </div>
+
+                <div id="preview-state-side" style="display: none; width: 100%;">
+                  <img id="preview-img-side" class="upload-preview" src="" alt="Side Panel Preview">
+                  <div class="upload-meta" id="preview-meta-side">side_panel.png (290 KB)</div>
+                  <div style="display: flex; gap: 8px; justify-content: center;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('file-input-side').click()">Replace</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="InspectionController.removeImage('side')">Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- E-Commerce Listing Screenshot Upload (Optional) -->
+            <div style="background-color: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 18px; margin-top: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div>
+                  <span style="font-weight: 700; font-size: 13.5px; color: var(--slate-900);">
+                    <i class="fa-solid fa-globe" style="color: #0284c7; margin-right: 6px;"></i> Upload E-Commerce Listing (Optional)
+                  </span>
+                  <div style="font-size: 12px; color: var(--slate-500); margin-top: 2px;">
+                    Screening digital marketplace product pages (Amazon, Flipkart, Blinkit, etc.) under Legal Metrology E-Commerce Rules.
+                  </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('file-input-ecomm').click()">
+                  <i class="fa-solid fa-file-arrow-up"></i> Upload Screenshot
+                </button>
+                <input type="file" id="file-input-ecomm" accept="image/*" style="display: none;" onchange="InspectionController.handleEcommerceUpload(event)">
+              </div>
+              <div id="ecomm-preview-container" style="display: none; font-size: 12px; color: var(--status-compliant-text); font-weight: 600;">
+                <i class="fa-solid fa-circle-check"></i> E-Commerce screenshot attached.
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button type="button" class="btn btn-secondary" onclick="InspectionController.goToStep1()">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Back to Details</span>
+            </button>
+            <button type="button" class="btn btn-primary btn-lg" onclick="InspectionController.startAnalysis()">
+              <i class="fa-solid fa-brain"></i>
+              <span>Analyze Package &amp; Extract Declarations</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- AI / OCR Processing Overlay Modal -->
+        <div class="processing-modal-overlay" id="processing-modal">
+          <div class="processing-card">
+            <div class="spinner-ring"></div>
+            <div class="processing-title">Processing Package Screening</div>
+            <div class="processing-subtitle" id="processing-status-text">Executing Computer Vision &amp; OCR Pipeline...</div>
+
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="analysis-progress-bar"></div>
+            </div>
+
+            <div class="processing-steps-list">
+              <div class="step-row" id="proc-step-1">
+                <i class="fa-regular fa-circle"></i>
+                <span>Image preprocessing &amp; perspective correction</span>
+              </div>
+              <div class="step-row" id="proc-step-2">
+                <i class="fa-regular fa-circle"></i>
+                <span>Text region detection &amp; bounding box mapping</span>
+              </div>
+              <div class="step-row" id="proc-step-3">
+                <i class="fa-regular fa-circle"></i>
+                <span>OCR text extraction &amp; optical confidence rating</span>
+              </div>
+              <div class="step-row" id="proc-step-4">
+                <i class="fa-regular fa-circle"></i>
+                <span>Mandatory Legal Metrology declaration identification</span>
+              </div>
+              <div class="step-row" id="proc-step-5">
+                <i class="fa-regular fa-circle"></i>
+                <span>Rule compliance evaluation &amp; preliminary screening</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/inspection.js"></script>
+</body>
+</html>

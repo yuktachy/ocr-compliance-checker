@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automated Screening Results — LegalMetriX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Persistent Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Navigation Bar -->
+      <div id="topbar-container" data-title="Automated Screening Results" data-breadcrumb="Screening Findings"></div>
+
+      <!-- Page Content -->
+      <main class="content-body">
+        <!-- Result Header with Actions -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <h1 style="font-size: 22px; font-weight: 800; color: var(--slate-900); letter-spacing: -0.4px;" id="result-page-title">
+                Screening Results: LM-1024
+              </h1>
+              <span id="header-status-badge" class="badge-status needs_verification">
+                <span class="badge-dot"></span>
+                Needs Verification
+              </span>
+            </div>
+            <p style="font-size: 13px; color: var(--slate-500); margin-top: 4px;" id="result-page-subtitle">
+              ABC Biscuits • ABC Foods Pvt Ltd • Packaged Food • Inspected at Chennai
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="dashboard.html" class="btn btn-secondary">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Dashboard</span>
+            </a>
+            <button type="button" class="btn btn-secondary" onclick="ResultsController.saveInspection()">
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Save Inspection</span>
+            </button>
+            <button type="button" class="btn btn-primary" onclick="ResultsController.generateOfficialReport()">
+              <i class="fa-solid fa-file-pdf"></i>
+              <span>Generate Official Report</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Compliance Assessment Summary Banner -->
+        <div class="assessment-banner needs_verification" id="assessment-banner-box">
+          <div>
+            <div class="assessment-status-title" id="assessment-status-text">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <span>Screening Assessment: Needs Verification</span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--slate-700); margin-top: 4px;" id="assessment-status-desc">
+              The automated system detected potential anomalies in mandatory consumer care declarations. Manual verification recommended.
+            </div>
+          </div>
+          <div class="assessment-counters" id="assessment-counters-box">
+            <div>Total Declarations: <strong id="cnt-total">6</strong></div>
+            <div>Detected: <strong id="cnt-detected" style="color: #059669;">5</strong></div>
+            <div>Needs Verification: <strong id="cnt-unclear" style="color: #d97706;">1</strong></div>
+          </div>
+        </div>
+
+        <!-- Two Column Main Layout: Left: Interactive Image BBox Viewer | Right: Extracted Declarations Table -->
+        <div class="results-layout">
+          <!-- LEFT: Package Image with Interactive Bounding Boxes -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3><i class="fa-solid fa-expand" style="color: #2563eb;"></i> Package Panel &amp; Detection Overlay</h3>
+                <div class="card-subtitle">Click any detected bounding box on the package to view extracted OCR data</div>
+              </div>
+              <div>
+                <span class="badge-status detected" style="font-size: 11px;">Back Display Panel</span>
+              </div>
+            </div>
+
+            <div class="card-body" style="padding: 16px; background-color: var(--slate-900); text-align: center;">
+              <div class="package-viewer-container" id="package-viewer-wrapper">
+                <div class="package-viewer-inner" id="package-viewer-inner">
+                  <img id="package-image-el" class="package-main-image" src="" alt="Packaged Commodity Image">
+                  <!-- Dynamic SVG / Bounding Box Layer -->
+                  <div class="bbox-layer" id="bbox-layer-container"></div>
+                </div>
+              </div>
+              <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-circle-info"></i> Boxes highlight OCR detection polygons mapped in real-time</span>
+                <span style="color: #38bdf8;">Tip: Click a box to highlight table row</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Extracted Declarations Table -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3><i class="fa-solid fa-list-check" style="color: #10b981;"></i> Extracted Declarations</h3>
+                <div class="card-subtitle">Preliminary screening against Legal Metrology Rules, 2011</div>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table" id="declarations-table">
+                <thead>
+                  <tr>
+                    <th>Mandatory Field</th>
+                    <th>Extracted Value</th>
+                    <th>Confidence</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="declarations-tbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mandatory Declarations Checklist -->
+            <div style="padding: 18px 22px; border-top: 1px solid var(--slate-200); background-color: #fafbfc;">
+              <h4 style="font-size: 13px; font-weight: 700; color: var(--slate-800); margin-bottom: 10px;">
+                Declaration Compliance Checklist (Rule 6)
+              </h4>
+              <div id="compliance-checklist-container" style="display: grid; gap: 8px; font-size: 12.5px;">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evidence & Findings Section -->
+        <div class="card" id="evidence-section" style="margin-top: 8px;">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-magnifying-glass-chart" style="color: #ef4444;"></i> Evidence &amp; Inspector Findings</h3>
+              <div class="card-subtitle">Review flagged non-compliance parameters and record manual enforcement remarks</div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div id="issues-list-container">
+              <!-- Dynamically populated issues cards with View on Image & Confirm/Dismiss -->
+            </div>
+
+            <!-- Inspector Verification Notes -->
+            <div style="margin-top: 20px; background-color: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 18px;">
+              <label class="form-label" for="inspector-remarks-input">
+                <i class="fa-solid fa-pen-to-square" style="color: var(--primary-navy-700); margin-right: 6px;"></i>
+                Authorized Inspector Verification Remarks
+              </label>
+              <textarea id="inspector-remarks-input" class="form-control" rows="3" placeholder="Enter officer manual verification observations, stock batch actions, or notes for record..."></textarea>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <span style="font-size: 11.5px; color: var(--slate-500);">
+                  Remarks are cryptographically attached to the official compliance report.
+                </span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="ResultsController.updateRemarks()">
+                  <i class="fa-solid fa-check"></i>
+                  <span>Update Remarks</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Readability Screening Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-glasses" style="color: #6366f1;"></i> Visual Readability Screening</h3>
+              <div class="card-subtitle">Estimated text height &amp; optical contrast analysis (Preliminary Screening)</div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>OCR Confidence</th>
+                  <th>Estimated Text Height (px)</th>
+                  <th>Contrast / Clarity</th>
+                  <th>Readability Status</th>
+                </tr>
+              </thead>
+              <tbody id="readability-tbody">
+                <!-- Dynamically Populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card-footer" style="display: block;">
+            <div class="legal-notice" style="margin-top: 0;">
+              <strong>Technical Notice:</strong> Font height measurements in pixels represent automated optical approximations from uploaded photographs and do not substitute calibrated physical micrometric measurement by an authorized Legal Metrology Officer.
+            </div>
+          </div>
+        </div>
+
+        <!-- Official Statutory Disclaimer Card -->
+        <div class="card" style="border-left: 4px solid var(--primary-navy-700);">
+          <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700; color: var(--slate-900);">
+                <i class="fa-solid fa-scale-balanced" style="color: var(--primary-navy-700); margin-right: 6px;"></i>
+                Statutory Enforcement Notice
+              </div>
+              <div style="font-size: 12.5px; color: var(--slate-600); margin-top: 4px;">
+                Automated screening is an investigative assistance tool. Final legal compliance determination remains exclusively with the authorized Legal Metrology Enforcement Official.
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-secondary" onclick="ResultsController.saveInspection()">
+                <i class="fa-solid fa-save"></i> Save Inspection
+              </button>
+              <button type="button" class="btn btn-primary" onclick="ResultsController.generateOfficialReport()">
+                <i class="fa-solid fa-file-invoice"></i> Generate Report
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/results.js"></script>
+</body>
+</html>
