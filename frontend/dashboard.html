@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compliance Dashboard — LegalMetriX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Persistent Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Navigation Bar -->
+      <div id="topbar-container" data-title="Compliance Dashboard" data-breadcrumb="Dashboard"></div>
+
+      <!-- Page Content -->
+      <main class="content-body">
+        <!-- Dashboard Header Banner -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--slate-900); letter-spacing: -0.4px;">Compliance Dashboard</h1>
+            <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">
+              Monitor packaged commodity inspections, declaration checks, and potential compliance issues.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <a href="inspection.html" class="btn btn-primary">
+              <i class="fa-solid fa-plus"></i>
+              <span>+ New Inspection</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4 Primary KPI Statistics Cards -->
+        <div class="stats-grid">
+          <!-- Total Inspections -->
+          <div class="stat-card total">
+            <div class="stat-icon-wrapper">
+              <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Total Inspections</div>
+              <div class="stat-value-group">
+                <div class="stat-value" id="stat-total-val">12,482</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Likely Compliant -->
+          <div class="stat-card compliant">
+            <div class="stat-icon-wrapper">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Likely Compliant</div>
+              <div class="stat-value-group">
+                <div class="stat-value" id="stat-compliant-val">9,821</div>
+                <span class="stat-percentage" id="stat-compliant-pct">78.6%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Potential Violations -->
+          <div class="stat-card violations">
+            <div class="stat-icon-wrapper">
+              <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Potential Violations</div>
+              <div class="stat-value-group">
+                <div class="stat-value" id="stat-violations-val">1,642</div>
+                <span class="stat-percentage" id="stat-violations-pct">13.2%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Needs Verification -->
+          <div class="stat-card verification">
+            <div class="stat-icon-wrapper">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Needs Verification</div>
+              <div class="stat-value-group">
+                <div class="stat-value" id="stat-verification-val">958</div>
+                <span class="stat-percentage" id="stat-verification-pct">7.7%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row: Compliance Overview (Doughnut) & Violations by Type (Bar) -->
+        <div class="dashboard-charts-row">
+          <!-- Compliance Overview -->
+          <div class="card" style="margin-bottom: 0;">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3><i class="fa-solid fa-chart-pie" style="color: #2563eb;"></i> Compliance Overview</h3>
+                <div class="card-subtitle">Distribution of screening outcomes</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height: 240px;">
+                <canvas id="complianceDoughnutChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Violations by Type -->
+          <div class="card" style="margin-bottom: 0;">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3><i class="fa-solid fa-bars-staggered" style="color: #d97706;"></i> Violations by Type</h3>
+                <div class="card-subtitle">Primary declaration infractions detected</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height: 240px;">
+                <canvas id="violationsBarChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inspection Activity Over Time -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-chart-line" style="color: #10b981;"></i> Inspection Activity</h3>
+              <div class="card-subtitle">Monthly enforcement audits and screening volume</div>
+            </div>
+            <div>
+              <span class="badge-status detected" style="font-size: 11px;">Past 6 Months</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height: 250px;">
+              <canvas id="activityLineChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Inspections Table -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-table-list" style="color: var(--primary-navy-800);"></i> Recent Inspections</h3>
+              <div class="card-subtitle">Latest packaged commodity screening records</div>
+            </div>
+            <a href="history.html" class="btn btn-secondary btn-sm">
+              <span>View All History</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Inspection ID</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Location</th>
+                  <th>Inspector</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="recent-inspections-tbody">
+                <!-- Dynamically Populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Top Inspection Locations -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3><i class="fa-solid fa-map-location-dot" style="color: #6366f1;"></i> Top Inspection Locations</h3>
+              <div class="card-subtitle">Regional enforcement audit concentration</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="location-bar-item">
+              <div class="location-bar-label">
+                <span><i class="fa-solid fa-location-dot" style="color: var(--primary-navy-600); margin-right: 6px;"></i> Chennai</span>
+                <span>3,421 inspections (27.4%)</span>
+              </div>
+              <div class="location-bar-track">
+                <div class="location-bar-fill" style="width: 88%;"></div>
+              </div>
+            </div>
+
+            <div class="location-bar-item">
+              <div class="location-bar-label">
+                <span><i class="fa-solid fa-location-dot" style="color: var(--primary-navy-600); margin-right: 6px;"></i> Bangalore</span>
+                <span>2,892 inspections (23.2%)</span>
+              </div>
+              <div class="location-bar-track">
+                <div class="location-bar-fill" style="width: 74%;"></div>
+              </div>
+            </div>
+
+            <div class="location-bar-item">
+              <div class="location-bar-label">
+                <span><i class="fa-solid fa-location-dot" style="color: var(--primary-navy-600); margin-right: 6px;"></i> Mumbai</span>
+                <span>2,401 inspections (19.2%)</span>
+              </div>
+              <div class="location-bar-track">
+                <div class="location-bar-fill" style="width: 62%;"></div>
+              </div>
+            </div>
+
+            <div class="location-bar-item">
+              <div class="location-bar-label">
+                <span><i class="fa-solid fa-location-dot" style="color: var(--primary-navy-600); margin-right: 6px;"></i> Delhi</span>
+                <span>1,892 inspections (15.1%)</span>
+              </div>
+              <div class="location-bar-track">
+                <div class="location-bar-fill" style="width: 48%;"></div>
+              </div>
+            </div>
+
+            <div class="location-bar-item" style="margin-bottom: 0;">
+              <div class="location-bar-label">
+                <span><i class="fa-solid fa-location-dot" style="color: var(--primary-navy-600); margin-right: 6px;"></i> Hyderabad</span>
+                <span>1,876 inspections (15.0%)</span>
+              </div>
+              <div class="location-bar-track">
+                <div class="location-bar-fill" style="width: 47%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
