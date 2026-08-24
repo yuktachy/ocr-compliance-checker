@@ -1,0 +1,22 @@
+{
+  "image_id": "Sevbhujia",
+  "condition": "missing_field",
+  "notes": "MRP, MFG. DATE, USE BY, and BATCH NO. labels are printed on the pack but the actual VALUES next to them are blank/not visible in this photo -- likely printed on a fold or edge not captured. Take another photo of that section before trusting this file for evaluation.",
+  "expected": {
+    "product_name": "Haldiram's Bhujia Sev (With Our Original Masala)",
+    "mrp": null,
+    "net_quantity": {
+      "value": 600,
+      "unit": "g",
+      "raw_text": "NET QUANTITY: 600 g"
+    },
+    "manufacturer": {
+      "name": "Haldiram Snacks Food Private Limited (Unit-Kasana II)",
+      "address": "Industrial Plot No. 9, Kh No 389/A, 392/A, 389/B, 101, 104, 395, Mouza Gumthala & Sawali, Tah. Kamptee, Nagpur (Rural), Nagpur, India - 441104"
+    },
+    "mfg_date": null,
+    "expiry_date": null,
+    "batch_number": null,
+    "fssai_license": "11524999000093"
+  }
+}

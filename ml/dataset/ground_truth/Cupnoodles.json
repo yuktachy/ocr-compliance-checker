@@ -1,0 +1,23 @@
+{
+  "image_id": "Cupnoodles",
+  "condition": "missing_field",
+  "notes": "MRP, exact net quantity, mfg/expiry date, and batch number are printed on the BOTTOM of the cup per on-pack text: 'See bottom of the cup for: MRP inclusive of all taxes & Unit Sale Price, PKD, Expiry Date & Batch No.' None of the 3 photos captured the cup bottom. Take a 4th photo before trusting this file for evaluation.",
+  "expected": {
+    "product_name": "Cup Noodles Mazedaar Masala - Delicious Masala Flavour",
+    "mrp": null,
+    "net_quantity": null,
+    "manufacturer": {
+      "name": "Indo Nissin Foods Pvt. Ltd.",
+      "address": null
+    },
+    "consumer_care": {
+      "phone": "080-25327900",
+      "email": "ccc@indonissin.com",
+      "address": "P.O. Box 5180, Bengaluru - 560001, Karnataka"
+    },
+    "mfg_date": null,
+    "expiry_date": null,
+    "batch_number": null,
+    "fssai_license": null
+  }
+}

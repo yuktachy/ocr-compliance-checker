@@ -1,0 +1,26 @@
+{
+  "image_id": "Maxproteinbar",
+  "condition": "tilted",
+  "notes": "Brand owner/marketer is Zydus Wellness Limited (separate FSSAI license number near the top of the label, digits partly hard to read -- verify). 'manufacturer' below reflects the 'Manufactured By' entity instead, not the brand owner. LOT NO. is printed as '072226C11:56' -- the ':56' may be a timestamp rather than part of the lot code; verify against the physical pack.",
+  "expected": {
+    "product_name": "Max Protein Daily Choco Classic Bar",
+    "mrp": {
+      "value": 80.0,
+      "currency": "INR",
+      "raw_text": "MRP (Inclusive of all taxes): Rs. 80.00"
+    },
+    "net_quantity": {
+      "value": 50,
+      "unit": "g",
+      "raw_text": "NET WEIGHT: 50 g"
+    },
+    "manufacturer": {
+      "name": "Goldee Foods Technologies Pvt. Ltd.",
+      "address": "D-14, Industrial Estate, Medchal (V&M), Medchal, Hyderabad, Telangana - 501401, India"
+    },
+    "mfg_date": "2026-07-22",
+    "expiry_date": "2027-07-21",
+    "batch_number": "072226C11:56",
+    "fssai_license": "13618034000383"
+  }
+}

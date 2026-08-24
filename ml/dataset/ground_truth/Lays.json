@@ -1,0 +1,26 @@
+{
+  "image_id": "Lays",
+  "condition": "clean",
+  "notes": "batch_number on-pack format is unusual ('2.6/N3007726' with a diamond symbol) -- the diamond indicates oil type (Palmolein) per the on-pack legend, not part of the code itself. Verify against the physical pack.",
+  "expected": {
+    "product_name": "Lay's Chile Limon Flavour Potato Chips",
+    "mrp": {
+      "value": 20.0,
+      "currency": "INR",
+      "raw_text": "MRP Rs. 20/- (INCL. OF ALL TAXES)"
+    },
+    "net_quantity": {
+      "value": 52.9,
+      "unit": "g",
+      "raw_text": "NET QTY: 52.9 g (48 g + 4.9 g)"
+    },
+    "manufacturer": {
+      "name": "PepsiCo India Holdings",
+      "address": "P.O. Box 27, DLF Qutab Enclave, Gurugram - 122002, Haryana"
+    },
+    "mfg_date": "2026-07-20",
+    "expiry_date": "2026-12-17",
+    "batch_number": "2.6/N3007726",
+    "fssai_license": "10014064000435"
+  }
+}
