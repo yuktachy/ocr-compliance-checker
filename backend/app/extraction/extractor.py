@@ -21,7 +21,7 @@ from app.extraction.ner import extract_manufacturer
 from app.extraction.field_dictionary import detect_language
 from app.extraction.exceptions import OCRFailedError
 
-from app.schemas.extraction import (
+from app.ml_schemas.extraction import (
     ExtractedLabelInfo,
     MRP,
     NetQuantity,
