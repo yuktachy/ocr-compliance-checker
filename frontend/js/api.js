@@ -1879,7 +1879,29 @@ window.API = API;
     return rows.map(inspection);
   };
   api.getInspection = async id => inspection(await request(`/inspections/${encodeURIComponent(id)}`));
-  api.createInspection = async value => inspection(await request('/inspections', { method: 'POST', body: JSON.stringify(inspectionPayload(value)) }));
+  const imageAsPngBlob = source => new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth || image.width;
+      canvas.height = image.naturalHeight || image.height;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0);
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not prepare package image.')), 'image/png');
+    };
+    image.onerror = () => reject(new Error('Could not read the package image.'));
+    image.src = source;
+  });
+  api.createInspection = async value => {
+    const imageSource = value.images?.back || value.images?.front || value.image_url;
+    if (!imageSource) throw new Error('A package image is required for ML analysis.');
+    const form = new FormData();
+    form.append('inspection', JSON.stringify(inspectionPayload(value)));
+    form.append('image', await imageAsPngBlob(imageSource), 'package.png');
+    const response = await fetch(`${baseUrl}/inspections`, { method: 'POST', body: form });
+    if (!response.ok) throw new Error((await response.json().catch(() => ({}))).detail || `Request failed (${response.status})`);
+    return inspection(await response.json());
+  };
   api.updateInspection = async (id, value) => inspection(await request(`/inspections/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(inspectionPayload(value)) }));
   api.deleteInspection = async id => request(`/inspections/${encodeURIComponent(id)}`, { method: 'DELETE' });
   api.getProducts = async filters => {

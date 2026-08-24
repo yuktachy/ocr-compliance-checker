@@ -236,9 +236,10 @@ const InspectionController = (function() {
       } else {
         // Complete Analysis
         setTimeout(async () => {
-          const analyzedInspection = API.analyzePackage(inspectionState, inspectionState.images);
           let savedInspection;
-          try { savedInspection = await API.createInspection(analyzedInspection); }
+          // The backend owns OCR/rule evaluation and returns the ML-generated
+          // annotated evidence image with the saved inspection.
+          try { savedInspection = await API.createInspection(inspectionState); }
           catch (error) { modal.classList.remove("active"); App.toast(`Could not save inspection: ${error.message}`, "danger"); return; }
 
           modal.classList.remove("active");
