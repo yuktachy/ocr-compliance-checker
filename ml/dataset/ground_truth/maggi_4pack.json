@@ -1,0 +1,23 @@
+{
+  "image_id": "maggi_4pack",
+  "condition": "blurry",
+  "notes": "The MRP/date panel (photo 002) is faint dot-matrix print that could not be confidently transcribed -- all fields left null rather than guessed. Net quantity for the family pack was NOT directly read either (only inferable from 'Pack contains 4 serves, 1 serve = 70g' on the nutrition panel, which is not a direct declaration). Multiple manufacturer plant addresses are printed on this pack (Goa, Uttarakhand, Karnataka, Himachal Pradesh); 'manufacturer' below is the Nestle India Limited marketer entry. Recommend re-photographing this panel in better light/focus before using this file for evaluation.",
+  "expected": {
+    "product_name": "Maggi 2-Minute Noodles Masala (4-pack)",
+    "mrp": null,
+    "net_quantity": null,
+    "manufacturer": {
+      "name": "Nestle India Limited",
+      "address": "100/101, World Trade Centre, Barakhamba Lane, New Delhi - 110001"
+    },
+    "consumer_care": {
+      "phone": "1800 103 1947",
+      "email": "wecare@in.nestle.com",
+      "address": "P.O. Bag No. 2, New Delhi - 110001"
+    },
+    "mfg_date": null,
+    "expiry_date": null,
+    "batch_number": null,
+    "fssai_license": null
+  }
+}
