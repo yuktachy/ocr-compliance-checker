@@ -3,7 +3,4 @@ __pycache__/
 *.pyc
 .env
 .DS_Store
-uploads/
-instance/
-*.db
-ml/dataset/images/*.jpg
+/upload
