@@ -6,7 +6,7 @@ and produces a single clean text blob (plus the still-available structured
 detections) for extraction/patterns.py and ner.py to work against.
 """
 
-from app.ocr.engine import Detection
+from ..ocr.engine import Detection
 
 
 # Detections below this confidence are usually OCR noise.

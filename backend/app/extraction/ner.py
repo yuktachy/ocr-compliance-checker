@@ -14,7 +14,7 @@ Two-tier approach:
 import json
 import re
 
-from app.extraction.field_dictionary import FIELD_KEYWORDS
+from ..extraction.field_dictionary import FIELD_KEYWORDS
 
 MANUFACTURER_LABELS = FIELD_KEYWORDS["manufacturer"] + FIELD_KEYWORDS["packer"]
 

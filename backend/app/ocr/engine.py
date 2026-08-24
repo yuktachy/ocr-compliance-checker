@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from app.extraction.exceptions import OCRFailedError
+from ..extraction.exceptions import OCRFailedError
 
 
 # Confidence threshold below which we retry with Tesseract.

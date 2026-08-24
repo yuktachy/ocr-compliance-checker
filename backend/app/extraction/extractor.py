@@ -6,10 +6,10 @@ full contract (sync, input/output types, error handling).
 
 import time
 
-from app.ocr.preprocess import load_and_preprocess
-from app.ocr.engine import run_ocr
-from app.ocr.postprocess import clean_detections, get_full_text
-from app.extraction.patterns import (
+from ..ocr.preprocess import load_and_preprocess
+from ..ocr.engine import run_ocr
+from ..ocr.postprocess import clean_detections, get_full_text
+from ..extraction.patterns import (
     extract_mrp,
     extract_net_quantity,
     extract_mfg_date,
@@ -17,11 +17,11 @@ from app.extraction.patterns import (
     extract_batch_number,
     extract_fssai_license,
 )
-from app.extraction.ner import extract_manufacturer
-from app.extraction.field_dictionary import detect_language
-from app.extraction.exceptions import OCRFailedError
+from ..extraction.ner import extract_manufacturer
+from ..extraction.field_dictionary import detect_language
+from ..extraction.exceptions import OCRFailedError
 
-from app.ml_schemas.extraction import (
+from ..ml_schemas.extraction import (
     ExtractedLabelInfo,
     MRP,
     NetQuantity,
